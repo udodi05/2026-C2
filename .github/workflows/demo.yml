@@ -1,9 +1,7 @@
 name: Github Actions Test
 
 on:
-  push:
-    branches:
-      - main
+    workflow_dispatch:
 
 jobs:
     Job-1:
@@ -22,7 +20,6 @@ jobs:
               
             - name: I want to sleep
               run: sleep 100
-
 
     Job-3:
         runs-on: ubuntu-latest
