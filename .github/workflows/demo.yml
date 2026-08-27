@@ -6,10 +6,18 @@ on:
       - main
 
 jobs:
-    echo-job:
+    Job-1:
       runs-on: ubuntu-latest
       steps:
         - name: Run Hello world
           run: echo "Hello world & Acada C2 Guys"
-          
         - run: sleep 30
+
+    Job-2:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Caveat
+              run: echo "Do your Assignment !!!!"
+              
+            - name: sleep
+              run: sleep 100
