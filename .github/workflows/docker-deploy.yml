@@ -1,0 +1,20 @@
+name: Run Techmax Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    Deploy:
+      runs-on: aws-self-hosted
+
+      steps:
+        - name: Docker pull image
+          run: docker pull kniru/techmax-website:latest
+
+        - name: Remove existing container
+          run: docker rm -f techmax-acada || true
+          
+        - name: Run pulled Image
+          run: docker run -d --name techmax-acada -p 80:80 kniru/techmax-website:latest
