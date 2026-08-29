@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-    Build:
+    Build2DH:
       runs-on: aws-runner
       steps:
         - uses: actions/checkout@v7
@@ -22,6 +22,30 @@ jobs:
 
         - name: Push Image to DockerHub
           run: docker push kniru/techmax-c2:latest
+
+    Build2ECR:
+      runs-on: aws-runner
+      steps:
+        - uses: actions/checkout@v7
+
+        - name: Build techmax Image
+          run: docker build . --file Dockerfile --tag kniru/techmax-c2:latest
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v6.2.3
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ca-central-1
+
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
+
+        - name: Push Image to ECR
+          run: |
+             docker tag techmax-web:latest ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
+             docker push ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
 
     # Deploy:
     #   runs-on: aws-runner
