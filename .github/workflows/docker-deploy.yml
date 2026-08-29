@@ -46,16 +46,35 @@ jobs:
           run: |
              docker tag techmax-c2:latest ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
              docker push ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
+      outputs:
+            image: ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
+            registry: ${{steps.login-ecr.outputs.registry}}
 
-    # Deploy:
-    #   runs-on: aws-runner
+    Deploy:
+      needs: Build2ECR
+      runs-on: aws-runner
 
-    #   steps:
-    #     - name: Docker pull image
-    #       run: docker pull kniru/techmax-website:latest
+      steps:
+        - name: Deploy To EC2
+          uses: appleboy/ssh-action@v1
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            SHA: ${{ github.sha }}
+            image: ${{needs.Build2ECR.outputs.image}}
+            registry: ${{needs.Build2ECR.outputs.registry}}
 
-    #     - name: Remove existing container
-    #       run: docker rm -f techmax-acada || true
+          with:
+            host: ${{ secrets.DOCKER_HOST }}
+            username: ${{ secrets.SSH_USERNAME }}
+            key: ${{ secrets.SSH_KEY }}
+            envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,SHA,image,registry
+            script: |
+                curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash || true
+                export PATH=$PATH:/home/ubuntu/.local/bin
+                export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                export AWS_DEFAULT_REGION=ca-central-1
+                aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin $registry
+                docker pull $image
 
-    #     - name: Run pulled Image
-    #       run: docker run -d --name techmax-acada -p 80:80 kniru/techmax-website:latest
