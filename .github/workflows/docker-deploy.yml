@@ -51,7 +51,7 @@ jobs:
             registry: ${{steps.login-ecr.outputs.registry}}
 
     Deploy:
-      needs: Build2ECR
+      needs: [Build2ECR, Build2DH]
       runs-on: aws-runner
 
       steps:
@@ -72,8 +72,8 @@ jobs:
             script: |
                 curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash || true
                 export PATH=$PATH:/home/ubuntu/.local/bin
-                export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> /tmp/.env
+                echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY " >> /tmp/.env
                 export AWS_DEFAULT_REGION=ca-central-1
                 echo $registry
                 echo $image
