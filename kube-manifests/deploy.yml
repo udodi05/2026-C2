@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: prd-web
+spec:
+  selector:
+    matchLabels:
+      app: acada-web
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: acada-web
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: acada-web
+        image: registry.kniru.local/root/techmax-web:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

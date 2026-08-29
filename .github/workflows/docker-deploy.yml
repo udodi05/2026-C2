@@ -1,4 +1,4 @@
-name: Run Techmax Website
+name: Deploy Techmax Web
 
 on:
   push:
@@ -6,15 +6,32 @@ on:
       - main
 
 jobs:
-    Deploy:
-      runs-on: aws-self-hosted
-
+    Build:
+      runs-on: aws-runner
       steps:
-        - name: Docker pull image
-          run: docker pull kniru/techmax-website:latest
+        - uses: actions/checkout@v7
 
-        - name: Remove existing container
-          run: docker rm -f techmax-acada || true
-          
-        - name: Run pulled Image
-          run: docker run -d --name techmax-acada -p 80:80 kniru/techmax-website:latest
+        - name: Login to Docker Hub
+          uses: docker/login-action@v4
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+            
+        - name: Build techmax Image
+          run: docker build . --file Dockerfile --tag kniru/techmax-c2:latest
+
+        - name: Push Image to DockerHub
+          run: docker push kniru/techmax-c2:latest
+
+    # Deploy:
+    #   runs-on: aws-runner
+
+    #   steps:
+    #     - name: Docker pull image
+    #       run: docker pull kniru/techmax-website:latest
+
+    #     - name: Remove existing container
+    #       run: docker rm -f techmax-acada || true
+
+    #     - name: Run pulled Image
+    #       run: docker run -d --name techmax-acada -p 80:80 kniru/techmax-website:latest
