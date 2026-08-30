@@ -70,10 +70,14 @@ jobs:
             key: ${{ secrets.SSH_KEY }}
             envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,SHA,image,registry
             script: |
+                echo "registry=$registry"
+                echo "image=$image"
+                echo "REGISTRY=$REGISTRY"
+                echo "IMAGE=$IMAGE"
                 curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash || true
                 export PATH=$PATH:/home/ubuntu/.local/bin
                 export AWS_DEFAULT_REGION=ca-central-1
+                aws sts get-caller-identity
                 aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin "$registry"
-                echo $?
                 docker pull "$image"
 
