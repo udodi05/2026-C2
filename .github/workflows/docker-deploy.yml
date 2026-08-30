@@ -43,12 +43,15 @@ jobs:
           uses: aws-actions/amazon-ecr-login@v2
 
         - name: Push Image to ECR
+          id: push-ecr
           run: |
              docker tag techmax-c2:latest ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
              docker push ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
+             echo "image=$IMAGE" >> $GITHUB_OUTPUT
+             echo "registry=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_OUTPUT
       outputs:
-            image: ${{steps.login-ecr.outputs.registry}}/techmax-web:${{github.sha}}
-            registry: ${{steps.login-ecr.outputs.registry}}
+            image: ${{steps.push-ecr.outputs.image}}
+            registry: ${{steps.push-ecr.outputs.registry}}
 
     Deploy:
       needs: [Build2ECR, Build2DH]
