@@ -78,4 +78,6 @@ jobs:
                 aws sts get-caller-identity
                 aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin "$REGISTRY"
                 docker pull "$IMAGE"
+                docker rm -f techmax-web || true
+                docker run -d -p 80:80 --name techmax-web "$IMAGE"
 
