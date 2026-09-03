@@ -80,4 +80,3 @@ jobs:
                 docker pull "$IMAGE"
                 docker rm -f techmax-web || true
                 docker run -d -p 80:80 --name techmax-web "$IMAGE"
-
