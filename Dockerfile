@@ -6,7 +6,7 @@ WORKDIR /usr/share/nginx/html
 
 # Copy the entire project to the nginx html directory
 COPY *.html /usr/share/nginx/html/
-COPY assets /usr/share/nginx/html
+COPY assets /usr/share/nginx/html/assets
 
 # Copy custom nginx configuration (optional)
 # COPY nginx.conf /etc/nginx/nginx.conf
