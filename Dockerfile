@@ -5,7 +5,7 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 
 # Copy the entire project to the nginx html directory
-COPY .*.html .
+COPY *.html .
 COPY assets .
 
 # Copy custom nginx configuration (optional)
